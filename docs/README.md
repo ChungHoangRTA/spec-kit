@@ -26,6 +26,7 @@ To build the documentation locally:
 - `toc.yml` - Table of contents configuration
 - `installation.md` - Installation guide
 - `quickstart.md` - Quick start guide
+- `qwen-cli.md` - Qwen CLI support guide
 - `_site/` - Generated documentation output (ignored by git)
 
 ## Deployment

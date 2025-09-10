@@ -13,6 +13,7 @@ NEW_PLAN="$FEATURE_DIR/plan.md"
 # Determine which agent context files to update
 CLAUDE_FILE="$REPO_ROOT/CLAUDE.md"
 GEMINI_FILE="$REPO_ROOT/GEMINI.md"
+QWEN_FILE="$REPO_ROOT/QWEN.md"
 COPILOT_FILE="$REPO_ROOT/.github/copilot-instructions.md"
 
 # Allow override via argument
@@ -194,6 +195,9 @@ case "$AGENT_TYPE" in
     "gemini") 
         update_agent_file "$GEMINI_FILE" "Gemini CLI"
         ;;
+    "qwen")
+        update_agent_file "$QWEN_FILE" "Qwen CLI"
+        ;;
     "copilot")
         update_agent_file "$COPILOT_FILE" "GitHub Copilot"
         ;;
@@ -201,16 +205,17 @@ case "$AGENT_TYPE" in
         # Update all existing files
         [ -f "$CLAUDE_FILE" ] && update_agent_file "$CLAUDE_FILE" "Claude Code"
         [ -f "$GEMINI_FILE" ] && update_agent_file "$GEMINI_FILE" "Gemini CLI" 
+        [ -f "$QWEN_FILE" ] && update_agent_file "$QWEN_FILE" "Qwen CLI"
         [ -f "$COPILOT_FILE" ] && update_agent_file "$COPILOT_FILE" "GitHub Copilot"
         
         # If no files exist, create based on current directory or ask user
-        if [ ! -f "$CLAUDE_FILE" ] && [ ! -f "$GEMINI_FILE" ] && [ ! -f "$COPILOT_FILE" ]; then
+        if [ ! -f "$CLAUDE_FILE" ] && [ ! -f "$GEMINI_FILE" ] && [ ! -f "$QWEN_FILE" ] && [ ! -f "$COPILOT_FILE" ]; then
             echo "No agent context files found. Creating Claude Code context file by default."
             update_agent_file "$CLAUDE_FILE" "Claude Code"
         fi
         ;;
     *)
-        echo "ERROR: Unknown agent type '$AGENT_TYPE'. Use: claude, gemini, copilot, or leave empty for all."
+        echo "ERROR: Unknown agent type '$AGENT_TYPE'. Use: claude, gemini, qwen, copilot, or leave empty for all."
         exit 1
         ;;
 esac
@@ -227,8 +232,9 @@ if [ ! -z "$NEW_DB" ] && [ "$NEW_DB" != "N/A" ]; then
 fi
 
 echo ""
-echo "Usage: $0 [claude|gemini|copilot]"
+echo "Usage: $0 [claude|gemini|qwen|copilot]"
 echo "  - No argument: Update all existing agent context files"
 echo "  - claude: Update only CLAUDE.md"
 echo "  - gemini: Update only GEMINI.md" 
+echo "  - qwen: Update only QWEN.md"
 echo "  - copilot: Update only .github/copilot-instructions.md"

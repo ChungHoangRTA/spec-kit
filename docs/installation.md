@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - **Linux/macOS** (or WSL2 on Windows)
-- AI coding agent: [Claude Code](https://www.anthropic.com/claude-code), [GitHub Copilot](https://code.visualstudio.com/), or [Gemini CLI](https://github.com/google-gemini/gemini-cli)
+- AI coding agent: [Claude Code](https://www.anthropic.com/claude-code), [GitHub Copilot](https://code.visualstudio.com/), [Gemini CLI](https://github.com/google-gemini/gemini-cli), or [Qwen CLI](https://github.com/QwenLM/qwen-code)
 - [uv](https://docs.astral.sh/uv/) for package management
 - [Python 3.11+](https://www.python.org/downloads/)
 - [Git](https://git-scm.com/downloads)
@@ -32,6 +32,7 @@ You can proactively specify your AI agent during initialization:
 uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai claude
 uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai gemini
 uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai copilot
+uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai qwen
 ```
 
 ### Ignore Agent Tools Check
@@ -40,6 +41,7 @@ If you prefer to get the templates without checking for the right tools:
 
 ```bash
 uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai claude --ignore-agent-tools
+uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai qwen --ignore-agent-tools
 ```
 
 ## Verification

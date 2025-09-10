@@ -86,44 +86,48 @@ jobs:
         echo "Creating Claude Code package..."
         mkdir -p sdd-claude-package
         cp -r sdd-package-base/* sdd-claude-package/
-        if [ -d "agent_templates/claude" ]; then
-          cp -r agent_templates/claude sdd-claude-package/.claude
-          echo "✓ Added Claude Code commands ($(find agent_templates/claude -type f | wc -l) files)"
+        # Use agent-file-template.md to create CLAUDE.md
+        if [ -f "templates/agent-file-template.md" ]; then
+          cp templates/agent-file-template.md sdd-claude-package/CLAUDE.md
+          echo "✓ Added CLAUDE.md from template"
         else
-          echo "⚠️ agent_templates/claude folder not found"
+          echo "⚠️ templates/agent-file-template.md not found"
         fi
         
         # Create Gemini CLI package
         echo "Creating Gemini CLI package..."
         mkdir -p sdd-gemini-package
         cp -r sdd-package-base/* sdd-gemini-package/
-        if [ -d "agent_templates/gemini" ]; then
-          cp -r agent_templates/gemini sdd-gemini-package/.gemini
-          # Move GEMINI.md to root for easier access
-          if [ -f "sdd-gemini-package/.gemini/GEMINI.md" ]; then
-            mv sdd-gemini-package/.gemini/GEMINI.md sdd-gemini-package/GEMINI.md
-            echo "✓ Moved GEMINI.md to root of Gemini package"
-          fi
-          # Remove empty .gemini folder if it only contained GEMINI.md
-          if [ -d "sdd-gemini-package/.gemini" ] && [ -z "$(find sdd-gemini-package/.gemini -type f)" ]; then
-            rm -rf sdd-gemini-package/.gemini
-            echo "✓ Removed empty .gemini folder"
-          fi
-          echo "✓ Added Gemini CLI commands ($(find agent_templates/gemini -type f | wc -l) files)"
+        # Use agent-file-template.md to create GEMINI.md
+        if [ -f "templates/agent-file-template.md" ]; then
+          cp templates/agent-file-template.md sdd-gemini-package/GEMINI.md
+          echo "✓ Added GEMINI.md from template"
         else
-          echo "⚠️ agent_templates/gemini folder not found"
+          echo "⚠️ templates/agent-file-template.md not found"
         fi
         
         # Create GitHub Copilot package
         echo "Creating GitHub Copilot package..."
         mkdir -p sdd-copilot-package
         cp -r sdd-package-base/* sdd-copilot-package/
-        if [ -d "agent_templates/copilot" ]; then
-          mkdir -p sdd-copilot-package/.github
-          cp -r agent_templates/copilot/* sdd-copilot-package/.github/
-          echo "✓ Added Copilot instructions to .github ($(find agent_templates/copilot -type f | wc -l) files)"
+        # Use agent-file-template.md to create COPILOT.md
+        if [ -f "templates/agent-file-template.md" ]; then
+          cp templates/agent-file-template.md sdd-copilot-package/COPILOT.md
+          echo "✓ Added COPILOT.md from template"
         else
-          echo "⚠️ agent_templates/copilot folder not found"
+          echo "⚠️ templates/agent-file-template.md not found"
+        fi
+        
+        # Create Qwen CLI package (based on Gemini CLI)
+        echo "Creating Qwen CLI package..."
+        mkdir -p sdd-qwen-package
+        cp -r sdd-package-base/* sdd-qwen-package/
+        # Use agent-file-template.md to create QWEN.md (based on Gemini)
+        if [ -f "templates/agent-file-template.md" ]; then
+          cp templates/agent-file-template.md sdd-qwen-package/QWEN.md
+          echo "✓ Added QWEN.md from template (based on Gemini)"
+        else
+          echo "⚠️ templates/agent-file-template.md not found for Qwen package"
         fi
         
         # Create archive files for each package
@@ -134,11 +138,14 @@ jobs:
         
         cd sdd-copilot-package && zip -r ../spec-kit-template-copilot-${{ steps.version.outputs.new_version }}.zip . && cd ..
         
+        cd sdd-qwen-package && zip -r ../spec-kit-template-qwen-${{ steps.version.outputs.new_version }}.zip . && cd ..
+        
         echo ""
         echo "📦 Packages created:"
         echo "Claude: $(ls -lh spec-kit-template-claude-*.zip | awk '{print $5}')"
         echo "Gemini: $(ls -lh spec-kit-template-gemini-*.zip | awk '{print $5}')"
         echo "Copilot: $(ls -lh spec-kit-template-copilot-*.zip | awk '{print $5}')"
+        echo "Qwen: $(ls -lh spec-kit-template-qwen-*.zip | awk '{print $5}')"
         echo "Copilot: $(ls -lh sdd-template-copilot-*.zip | awk '{print $5}')"
         
     - name: Generate detailed release notes
@@ -155,9 +162,6 @@ jobs:
         fi
         
         # Count files in each directory
-        CLAUDE_COUNT=$(find agent_templates/claude -type f 2>/dev/null | wc -l || echo "0")
-        GEMINI_COUNT=$(find agent_templates/gemini -type f 2>/dev/null | wc -l || echo "0")
-        COPILOT_COUNT=$(find agent_templates/copilot -type f 2>/dev/null | wc -l || echo "0")
         MEMORY_COUNT=$(find memory -type f 2>/dev/null | wc -l || echo "0")
         SCRIPTS_COUNT=$(find scripts -type f 2>/dev/null | wc -l || echo "0")
         
@@ -169,7 +173,8 @@ jobs:
         Download the template for your preferred AI assistant:
         - spec-kit-template-copilot-${{ steps.version.outputs.new_version }}.zip
         - spec-kit-template-claude-${{ steps.version.outputs.new_version }}.zip
-        - spec-kit-template-gemini-${{ steps.version.outputs.new_version }}.zip  
+        - spec-kit-template-gemini-${{ steps.version.outputs.new_version }}.zip
+        - spec-kit-template-qwen-${{ steps.version.outputs.new_version }}.zip  
         
         Changes since $LAST_TAG:
         $COMMITS
@@ -185,6 +190,7 @@ jobs:
           spec-kit-template-copilot-${{ steps.version.outputs.new_version }}.zip \
           spec-kit-template-claude-${{ steps.version.outputs.new_version }}.zip \
           spec-kit-template-gemini-${{ steps.version.outputs.new_version }}.zip \
+          spec-kit-template-qwen-${{ steps.version.outputs.new_version }}.zip \
           --title "Spec Kit Templates - $VERSION_NO_V" \
           --notes-file release_notes.md
       env:

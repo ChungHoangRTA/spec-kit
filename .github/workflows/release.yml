@@ -134,8 +134,9 @@ jobs:
         cp -r sdd-package-base/* sdd-gemini-package/
         mkdir -p sdd-gemini-package/.gemini/commands
         generate_commands "gemini" "toml" "{{args}}" "sdd-gemini-package/.gemini/commands"
-        if [ -f "agent_templates/gemini/GEMINI.md" ]; then
-          cp agent_templates/gemini/GEMINI.md sdd-gemini-package/GEMINI.md
+        # Use agent-file-template.md to create GEMINI.md
+        if [ -f "templates/agent-file-template.md" ]; then
+          cp templates/agent-file-template.md sdd-gemini-package/GEMINI.md
         fi
         echo "Created Gemini CLI package"
         
@@ -146,12 +147,25 @@ jobs:
         generate_commands "copilot" "prompt.md" "\$ARGUMENTS" "sdd-copilot-package/.github/prompts"
         echo "Created GitHub Copilot package"
         
+        # Create Qwen CLI package (based on Gemini CLI)
+        mkdir -p sdd-qwen-package
+        cp -r sdd-package-base/* sdd-qwen-package/
+        mkdir -p sdd-qwen-package/.gemini/commands
+        generate_commands "gemini" "toml" "{{args}}" "sdd-qwen-package/.gemini/commands"
+        # Use agent-file-template.md to create QWEN.md
+        if [ -f "templates/agent-file-template.md" ]; then
+          cp templates/agent-file-template.md sdd-qwen-package/QWEN.md
+        fi
+        echo "Created Qwen CLI package"
+        
         # Create archive files for each package
         cd sdd-claude-package && zip -r ../spec-kit-template-claude-${{ steps.get_tag.outputs.new_version }}.zip . && cd ..
         
         cd sdd-gemini-package && zip -r ../spec-kit-template-gemini-${{ steps.get_tag.outputs.new_version }}.zip . && cd ..
         
         cd sdd-copilot-package && zip -r ../spec-kit-template-copilot-${{ steps.get_tag.outputs.new_version }}.zip . && cd ..
+        
+        cd sdd-qwen-package && zip -r ../spec-kit-template-qwen-${{ steps.get_tag.outputs.new_version }}.zip . && cd ..
         
         # List contents for verification
         echo "Claude package contents:"
@@ -188,7 +202,8 @@ jobs:
         Download the template for your preferred AI assistant:
         - spec-kit-template-copilot-${{ steps.get_tag.outputs.new_version }}.zip
         - spec-kit-template-claude-${{ steps.get_tag.outputs.new_version }}.zip
-        - spec-kit-template-gemini-${{ steps.get_tag.outputs.new_version }}.zip  
+        - spec-kit-template-gemini-${{ steps.get_tag.outputs.new_version }}.zip
+        - spec-kit-template-qwen-${{ steps.get_tag.outputs.new_version }}.zip  
         EOF
         
         echo "Generated release notes:"
@@ -205,6 +220,7 @@ jobs:
           spec-kit-template-copilot-${{ steps.get_tag.outputs.new_version }}.zip \
           spec-kit-template-claude-${{ steps.get_tag.outputs.new_version }}.zip \
           spec-kit-template-gemini-${{ steps.get_tag.outputs.new_version }}.zip \
+          spec-kit-template-qwen-${{ steps.get_tag.outputs.new_version }}.zip \
           --title "Spec Kit Templates - $VERSION_NO_V" \
           --notes-file release_notes.md
       env:
