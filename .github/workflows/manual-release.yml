@@ -118,19 +118,18 @@ jobs:
           echo "⚠️ templates/agent-file-template.md not found"
         fi
         
-        # Create Qwen CLI package (copied from Gemini CLI)
+        # Create Qwen CLI package (based on Gemini CLI)
         echo "Creating Qwen CLI package..."
         mkdir -p sdd-qwen-package
-        cp -r sdd-gemini-package/* sdd-qwen-package/
-        # Rename GEMINI.md to QWEN.md
-        if [ -f "sdd-qwen-package/GEMINI.md" ]; then
-          mv sdd-qwen-package/GEMINI.md sdd-qwen-package/QWEN.md
+        cp -r sdd-package-base/* sdd-qwen-package/
+        mkdir -p sdd-qwen-package/.qwen/commands
+        # Use agent-file-template.md to create QWEN.md (based on Gemini)
+        if [ -f "templates/agent-file-template.md" ]; then
+          cp templates/agent-file-template.md sdd-qwen-package/QWEN.md
+          echo "✓ Added QWEN.md from template (based on Gemini)"
+        else
+          echo "⚠️ templates/agent-file-template.md not found for Qwen package"
         fi
-        # Update .gemini directory to .qwen directory
-        if [ -d "sdd-qwen-package/.gemini" ]; then
-          mv sdd-qwen-package/.gemini sdd-qwen-package/.qwen
-        fi
-        echo "✓ Created Qwen CLI package (copied from Gemini)"
         
         # Create archive files for each package
         echo "Creating archive files..."
