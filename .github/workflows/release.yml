@@ -149,14 +149,16 @@ jobs:
         
         # Create Qwen CLI package (based on Gemini CLI)
         mkdir -p sdd-qwen-package
-        cp -r sdd-package-base/* sdd-qwen-package/
-        mkdir -p sdd-qwen-package/.gemini/commands
-        generate_commands "gemini" "toml" "{{args}}" "sdd-qwen-package/.gemini/commands"
-        # Use agent-file-template.md to create QWEN.md
-        if [ -f "templates/agent-file-template.md" ]; then
-          cp templates/agent-file-template.md sdd-qwen-package/QWEN.md
+        cp -r sdd-gemini-package/* sdd-qwen-package/
+        # Rename GEMINI.md to QWEN.md
+        if [ -f "sdd-qwen-package/GEMINI.md" ]; then
+          mv sdd-qwen-package/GEMINI.md sdd-qwen-package/QWEN.md
         fi
-        echo "Created Qwen CLI package"
+        # Update .gemini directory to .qwen directory
+        if [ -d "sdd-qwen-package/.gemini" ]; then
+          mv sdd-qwen-package/.gemini sdd-qwen-package/.qwen
+        fi
+        echo "Created Qwen CLI package (copied from Gemini)"
         
         # Create archive files for each package
         cd sdd-claude-package && zip -r ../spec-kit-template-claude-${{ steps.get_tag.outputs.new_version }}.zip . && cd ..
